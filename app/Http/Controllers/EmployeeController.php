@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Company;
 use App\Models\Employee;
+use Illuminate\Auth\Events\Validated;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -68,13 +69,14 @@ class EmployeeController extends Controller
             'surname'=>'required|string',
             'middlename'=>'required|string',
             'job_title'=>'required|string',
-            'phone_number'=>'required|regex:/^\+998-?[0-9]{9}$/',
+            'phone_number'=>'required|regex:/^[0-9]{9}$/',
             'address'=>'required|string',
         ]);
 
         if($validated->fails()){
-            return response([
+            return response()->json([
                 "message"=>"cannot create new employee, validation failed",
+                "validation"=>$validated->messages()->toArray(),
             ],400);
         }
         $employee=new Employee([
@@ -139,7 +141,7 @@ class EmployeeController extends Controller
             'surname'=>'string|nullable',
             'middlename'=>'string|nullable',
             'job_title'=>'string|nullable',
-            'phone_number'=>'nullable|regex:/^\+998-?[0-9]{9}$/',
+            'phone_number'=>'nullable|regex:/^[0-9]{9}$/',
             'address'=>'string|nullable'
         ]);
         if($validation->fails()){

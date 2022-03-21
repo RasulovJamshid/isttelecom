@@ -11,9 +11,9 @@ use Illuminate\Support\Facades\Validator;
 class CompanyController extends Controller
 {
 
-    public function single_company(Request $request,$company_id){
+    public function single_company(Request $request){
         $current_user = auth('api')->id();
-        $company = Company::find($company_id);
+        $company = Company::where('user_id',$current_user)->first();
 
         if(is_null($company)){
             return response(['message'=>'no company with given id'],404);
@@ -68,7 +68,7 @@ class CompanyController extends Controller
         return response(['message'=>"Any company with given id"],404);
     }
 
-    public function update(Request $request,$company_id){
+    public function update(Request $request){
         $current_user = auth('api')->id();
 
 
@@ -84,7 +84,7 @@ class CompanyController extends Controller
             return response(['message'=>'values not satisfies the needs'],400);
         }
 
-        $company = Company::find($company_id);
+        $company = Company::where("user_id",$current_user)->first();
 
         //check permissions
         if($company->user_id != $current_user){

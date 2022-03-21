@@ -22,9 +22,6 @@ public function __construct(){
 }
 
 public function register(Request $request){
-
-
-
     $validator = Validator::make($request->all(),[
         'name' => 'required|string',
         'email' => 'required|string|unique:users',
@@ -34,13 +31,14 @@ public function register(Request $request){
         'company_email' => 'required|email',
         'company_website' => 'nullable|url',
         'company_phone_number' => 'required|string',
+        'address'=>'required|string'
     ]);
 
     if($validator->fails()){
-        return response()->json([
+        return response([
         'success' => false,
         'message' => $validator->messages()->toArray()
-        ], 500);
+        ], 403);
     }
     $data = [
         "name" => $request->name,
@@ -80,6 +78,9 @@ $validator = Validator::make($request->all(),[
 'email' => 'required|string',
 'password' => 'required|min:6',
 ]);
+$role = "manager";
+
+
 
 if($validator->fails()){
     return response()->json([
@@ -90,7 +91,9 @@ if($validator->fails()){
 
 $credentials = $request->only(["email","password"]);
 $user = User::where('email',$credentials['email'])->first();
-
+if($user->hasRole('admin')){
+    $role = 'admin';
+}
     if($user){
         if(!auth()->attempt($credentials)){
             $responseMessage = "Invalid username or password";
@@ -102,7 +105,7 @@ $user = User::where('email',$credentials['email'])->first();
         }
         $accessToken = auth()->user()->createToken('authToken')->accessToken;
         $responseMessage = "Login Successful";
-        return $this->respondWithToken($accessToken,$responseMessage,auth()->user());
+        return $this->respondWithToken($accessToken,$responseMessage,auth()->user(),$role);
     }
     else{
         $responseMessage = "Sorry, this user does not exist";

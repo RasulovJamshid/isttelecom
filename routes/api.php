@@ -31,14 +31,14 @@ Route::group(['prefix' => 'users', 'middleware' => 'CORS'], function ($router) {
     });
 
 Route::prefix("admin")->middleware(['auth:api','CORS','role:admin'])->group(function(){
-    Route::apiResource('/company', CompanyController::class)->middleware('role:admin');
+    Route::apiResource('/company', CompanyController::class);
     Route::get('/paginate/employee',[EmployeeController::class,'admin_index']);
     Route::get('/paginate/company',[CompanyController::class,'index']);
 });
 
 
 Route::prefix("manager")->middleware(['auth:api','CORS','role:manager'])->group(function(){
-    Route::get('/company/{company_id}',[CompanyController::class, 'single_company'])->whereNumber("company_id");
-    Route::put('/company/{company_id}',[CompanyController::class, 'update'])->whereNumber("company_id");
+    Route::get('/company',[CompanyController::class, 'single_company'])->whereNumber("company_id");
+    Route::put('/company',[CompanyController::class, 'update'])->whereNumber("company_id");
     Route::apiResource('/employee', EmployeeController::class)->only(["index","show","update","destroy","store"]);
 });

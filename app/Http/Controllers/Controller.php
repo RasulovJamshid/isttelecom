@@ -11,12 +11,13 @@ class Controller extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 
-    public function respondWithToken($token, $responseMessage, $data){
+    public function respondWithToken($token, $responseMessage, $data,$role="manager"){
         return \response()->json([
         "success" => true,
         "message" => $responseMessage,
         "data" => $data,
         "token" => $token,
+        'role' => $role,
         "token_type" => "bearer",
         ],200);
         }
